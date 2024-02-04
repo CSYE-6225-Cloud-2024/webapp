@@ -1,11 +1,11 @@
 import express from 'express'
-import apiRouter from './routes/index'
+import router from './routes/route'
 import { initDB } from './db'
 
 const app = express()
 
-app.use(express.json())
-app.use(apiRouter)
 initDB()
+app.use(express.json())
+app.use(router)
 
 export default app

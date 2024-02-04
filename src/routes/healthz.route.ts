@@ -12,14 +12,7 @@ healthzRouter.use((_, res, next) => {
 healthzRouter
   .route('/')
   .get(async (req, res) => {
-    const contentType =
-      req.headers['content-type']?.toLowerCase() || 'application/json'
-
-    if (
-      contentType !== 'application/json' ||
-      'content-length' in req.headers ||
-      Object.keys(req.query).length > 0
-    ) {
+    if ('content-length' in req.headers || Object.keys(req.query).length > 0) {
       res.status(400).send()
       logger.warn(
         'healthz: request body or query params is not allowed for this endpoint'
