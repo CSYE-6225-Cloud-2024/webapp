@@ -1,8 +1,7 @@
-name: webapp-main
-run-name: webapp main merge check
+name: webapp-main CI
+run-name: webapp main pull request check
 on:
   pull_request:
-    types: [opened, reopened]
     branches:
       - main
 jobs:
@@ -10,15 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '20'
-      - name: Install yarn
-        run: npm install -g yarn
       - name: Install dependencies
-        run: yarn install
+        run: yarn --frozen-lockfile
       - name: test
         run: yarn test
       - name: echo
