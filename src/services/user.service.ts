@@ -36,7 +36,7 @@ const createUser = async (data: userPostRequest): Promise<userResponse> => {
     return userResValidator.parse(newUser)
   } catch (error) {
     logger.error(`createUser: ${error}`)
-    throw new Error('Error creating user')
+    throw new Error('User with that username already exists')
   }
 }
 
@@ -64,7 +64,7 @@ const getUser = async (username: string): Promise<userResponse> => {
     return userResValidator.parse(user)
   } catch (error) {
     logger.error(`getUser: ${error}`)
-    throw new Error('Error getting user')
+    throw new Error('Error getting user info')
   }
 }
 
