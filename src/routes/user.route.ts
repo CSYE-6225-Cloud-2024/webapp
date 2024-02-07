@@ -1,13 +1,20 @@
 import { Router } from 'express'
 import { userController } from '../controllers/users.controller'
 import logger from '../util/logger'
+import { request } from '../middleware/request'
+import { checkDBConection } from '../middleware/connection'
 
 const publicRoutes = Router()
 const authenticatedRoutes = Router()
 
 publicRoutes
   .route('/user')
-  .post(userController.createUserController)
+  .post(
+    request.isValidContentType,
+    request.noQueryAllowed,
+    checkDBConection,
+    userController.createUserController
+  )
   .all((req, res) => {
     logger.warn(`user: invalid request method ${req.method}`)
     res.status(405).send()
@@ -15,8 +22,18 @@ publicRoutes
 
 authenticatedRoutes
   .route('/user/self')
-  .get(userController.getUserController)
-  .put(userController.updateUserController)
+  .get(
+    request.noQueryAllowed,
+    request.noBodyAllowed,
+    checkDBConection,
+    userController.getUserController
+  )
+  .put(
+    request.isValidContentType,
+    request.noQueryAllowed,
+    checkDBConection,
+    userController.updateUserController
+  )
   .head((req, res) => {
     logger.warn(`user/self: invalid request method ${req.method}`)
     res.status(405).send()

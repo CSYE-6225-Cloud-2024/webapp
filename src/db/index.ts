@@ -1,9 +1,14 @@
-import { usersInit } from './models/users.model'
+import { db } from '../util/db'
+import logger from '../util/logger'
 
-const modelInits = [usersInit]
-
-export const initDB = async () => {
-  for (const modelInit of modelInits) {
-    modelInit()
-  }
+export const initDB = () => {
+  db.authenticate()
+    .then(async () => {
+      logger.info('Connection has been established successfully.')
+      await db.sync()
+    })
+    .catch((err) => {
+      logger.error(`Unable to connect to the database: ${err}`)
+      setTimeout(initDB, 5000)
+    })
 }

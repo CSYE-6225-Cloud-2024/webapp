@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon",
-    "test": "jest --silent --verbose --coverage=true"
+    "test": "jest --silent --verbose"
   },
   "dependencies": {
     "dotenv": "^16.4.1",
