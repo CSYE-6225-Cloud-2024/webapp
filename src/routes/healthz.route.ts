@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import { db } from '../util/db'
 import logger from '../util/logger'
+import { request } from '../middleware/request'
+import { checkDBConection } from '../middleware/connection'
 
 const healthzRouter = Router()
 
@@ -10,31 +11,21 @@ healthzRouter.use((_, res, next) => {
 })
 
 healthzRouter
-  .route('/')
-  .get(async (req, res) => {
-    if ('content-length' in req.headers || Object.keys(req.query).length > 0) {
-      res.status(400).send()
-      logger.warn(
-        'healthz: request body or query params is not allowed for this endpoint'
-      )
-      return
+  .route('/healthz')
+  .get(
+    request.noBodyAllowed,
+    request.noQueryAllowed,
+    checkDBConection,
+    async (req, res) => {
+      res.send()
     }
-
-    db.authenticate()
-      .then(() => {
-        logger.info('healthz: database connection successful')
-        res.status(200).send()
-      })
-      .catch((err) => {
-        logger.error(`healthz: ${err} - database connection failed`)
-        res.status(503).send()
-      })
-  })
-  .head((_, res) => {
+  )
+  .head((req, res) => {
+    logger.warn(`/healthz: invalid request method ${req.method}`)
     res.status(405).send()
   })
   .all((req, res) => {
-    logger.error(`healthz: invalid request method ${req.method}`)
+    logger.warn(`/healthz: invalid request method ${req.method}`)
     res.status(405).send()
   })
 

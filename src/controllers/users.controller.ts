@@ -17,30 +17,32 @@ const createUserController = async (req: Request, res: Response) => {
       ...req.body,
       password: hashedPassword,
     })
-    const response: userResponse = await userService.createUser(data)
-    logger.info(`created user with username: ${response.username}`)
-    res.status(201).send(response)
-  } catch (error) {
+    userService
+      .createUser(data)
+      .then((response: userResponse) => {
+        logger.info(`created user with username: ${response.username}`)
+        res.status(201).send(response)
+      })
+      .catch((error: Error) => {
+        logger.error(`createUserController: ${error}`)
+        res.status(400).send({ error: error.message })
+      })
+  } catch (_) {
     res.status(400).send()
   }
 }
 
-const getUserController = async (req: Request, res: Response) => {
-  if ('content-length' in req.headers || Object.keys(req.query).length > 0) {
-    res.status(400).send()
-    logger.warn(
-      'user/self: request body or query params is not allowed for this endpoint'
-    )
-    return
-  }
-
-  try {
-    const user: userResponse = await userService.getUser(res.locals.username)
-    logger.info(`found user with username: ${user.username}`)
-    res.status(200).send(user)
-  } catch (error) {
-    res.status(400).send()
-  }
+const getUserController = (req: Request, res: Response) => {
+  userService
+    .getUser(res.locals.username)
+    .then((response: userResponse) => {
+      logger.info(`getUserController: ${response.username}`)
+      res.status(200).send(response)
+    })
+    .catch((error: Error) => {
+      logger.error(`getUserController: ${error}`)
+      res.status(404).send({ error: error.message })
+    })
 }
 
 const updateUserController = async (req: Request, res: Response) => {
@@ -50,10 +52,16 @@ const updateUserController = async (req: Request, res: Response) => {
       ...req.body,
       password: hashedPassword,
     })
-    await userService.updateUser(data, res.locals.username)
-    logger.info('user updated successfully')
-    res.status(204).send()
-  } catch (error) {
+    userService
+      .updateUser(data, res.locals.username)
+      .then(() => {
+        logger.info('user updated successfully')
+        res.status(204).send()
+      })
+      .catch((error: Error) => {
+        res.status(400).send({ error: error.message })
+      })
+  } catch (_) {
     res.status(400).send()
   }
 }

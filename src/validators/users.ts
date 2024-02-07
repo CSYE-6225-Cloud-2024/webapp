@@ -13,9 +13,9 @@ export type userPostRequest = z.infer<typeof userPostReqValidator>
 
 export const userPutReqValidator = z
   .object({
-    first_name: z.string(),
-    last_name: z.string(),
-    password: z.string(),
+    first_name: z.string().optional(),
+    last_name: z.string().optional(),
+    password: z.string().optional(),
   })
   .strict()
 

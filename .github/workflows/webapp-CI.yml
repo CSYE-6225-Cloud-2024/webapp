@@ -16,5 +16,5 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: echo
-        run: echo "hello"
+      - name: Test
+        run: yarn test
