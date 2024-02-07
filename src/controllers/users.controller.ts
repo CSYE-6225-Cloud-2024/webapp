@@ -25,7 +25,7 @@ const createUserController = async (req: Request, res: Response) => {
       })
       .catch((error: Error) => {
         logger.error(`createUserController: ${error}`)
-        res.status(400).send({ error: error.message })
+        res.status(400).send()
       })
   } catch (_) {
     res.status(400).send()
@@ -41,12 +41,17 @@ const getUserController = (req: Request, res: Response) => {
     })
     .catch((error: Error) => {
       logger.error(`getUserController: ${error}`)
-      res.status(404).send({ error: error.message })
+      res.status(404).send()
     })
 }
 
 const updateUserController = async (req: Request, res: Response) => {
   try {
+    if (Object.keys(req.body).length === 0) {
+      logger.error('updateUserController: no data provided')
+      res.status(400).send()
+      return
+    }
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     const data: userPutRequest = await userPutReqValidator.parseAsync({
       ...req.body,
@@ -59,7 +64,8 @@ const updateUserController = async (req: Request, res: Response) => {
         res.status(204).send()
       })
       .catch((error: Error) => {
-        res.status(400).send({ error: error.message })
+        logger.error(`updateUserController: ${error}`)
+        res.status(400).send()
       })
   } catch (_) {
     res.status(400).send()
