@@ -6,8 +6,8 @@
   "author": "Jay Vekariya",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon",
-    "test": "jest --silent --verbose"
+    "dev": "NODE_ENV=development nodemon",
+    "test": "NODE_ENV=test jest --silent --verbose"
   },
   "dependencies": {
     "dotenv": "^16.4.1",
