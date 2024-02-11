@@ -1,18 +1,10 @@
 import app from '../src'
 import request from 'supertest'
 import { users } from '../src/db/models/users.model'
-import { db } from '../src/util/db'
 
 describe('users', () => {
-  beforeAll((done) => {
-    users.afterSync(async () => {
-      await users.destroy({ where: {} })
-    })
-    done()
-  })
-
   afterAll(async () => {
-    await db.drop()
+    await users.drop()
   })
 
   describe('create user and get that user', () => {

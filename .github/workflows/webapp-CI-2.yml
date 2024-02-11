@@ -1,4 +1,4 @@
-name: webapp CI
+name: webapp CI 2
 on:
   pull_request:
     branches:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -40,4 +41,4 @@ jobs:
           DB_PASSWORD: test
           DB_NAME: test
           DB_PORT: 5432
-        run: yarn test
+        run: yarn test --ci
