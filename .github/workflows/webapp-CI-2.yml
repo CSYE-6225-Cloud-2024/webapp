@@ -8,40 +8,19 @@ jobs:
   test:
     name: user test
     runs-on: ubuntu-latest
-    # services:
-    #   postgres:
-    #     image: postgres:latest
-    #     env:
-    #       POSTGRES_USER: test
-    #       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-    #       POSTGRES_DB: test
-    #     ports:
-    #       - 5432:5432
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
+    env:
+      DB_USER: test
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: test
     steps:
       - name: setup Database
-        env:
-          DB_USER: test
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: test
         run: |
-          # init db
-          sudo postgresql-setup --initdb 
-
-          # change the longin method in pg_hba.conf
-          find / -name "pg_hba.conf" -exec sed -i 's/ident/scram-sha-256/g' {} +;
-
           # start the postgres
           sudo systemctl start postgresql
 
           # create user and database
-          sudo -u postgres psql -U postgres -c "create user ${DB_USER} with password '${DB_PASSWORD}'"
-          sudo -u postgres psql -U postgres -c "create database ${DB_NAME} with owner ${DB_USER}"
-          sudo -u postgres psql -U postgres -c "grant all privileges on database ${DB_NAME} to ${DB_USER}"
+          sudo -u postgres psql -U postgres -c "create user $DB_USER with password '$DB_PASSWORD'"
+          sudo -u postgres psql -U postgres -c "create database $DB_NAME with owner $DB_USER"
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -54,8 +33,4 @@ jobs:
         run: yarn --frozen-lockfile
 
       - name: Test
-        env:
-          DB_USER: test
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: test
         run: yarn test --ci
