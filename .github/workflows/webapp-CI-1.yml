@@ -5,8 +5,8 @@ on:
       - main
 
 jobs:
-  test:
-    name: first CI
+  build:
+    name: yarn install
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

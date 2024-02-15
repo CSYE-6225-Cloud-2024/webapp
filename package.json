@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development nodemon",
-    "test": "NODE_ENV=test jest --silent --verbose --detectOpenHandles"
+    "test": "NODE_ENV=test jest --silent --verbose"
   },
   "dependencies": {
     "dotenv": "^16.4.1",
