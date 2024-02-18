@@ -1,0 +1,31 @@
+name: packer validation
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Packer Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup packer
+        uses: hashicorp/setup-packer@main
+
+      - name: zip files
+        run: zip -r webapp.zip .
+
+      - name: Packer init
+        run: packer init packer/main.pkr.hcl
+
+      - name: Packer fmt
+        run: packer fmt -check packer/main.pkr.hcl
+
+      - name: Packer validate
+        env:
+          project_id: 'test-project-id'
+          zone: 'test-zone'
+        run: packer validate --var "project_id=${project_id}" --var "zone=${zone}" packer/main.pkr.hcl

@@ -1,0 +1,46 @@
+name: packer build after running integration tests
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        uses: ./.github/workflows/webapp-CI-2.yml
+
+  build:
+    needs: test
+    name: Packer Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: zip file
+        run: zip -r webapp.zip .
+
+      - name: Setup packer
+        uses: hashicorp/setup-packer@main
+
+      - name: gcloud auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: gcloud setup
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Check gcloud installation
+        run: gcloud info
+
+      - name: Packer init
+        run: packer init packer/main.pkr.hcl
+
+      - name: Packer build
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          packer build packer/main.pkr.hcl
