@@ -57,8 +57,13 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars = ["DB_NAME=${var.DB_NAME}", "DB_USER=${var.DB_USER}", "DB_PASSWORD=${var.DB_PASSWORD}"]
-    scripts          = ["packer/scripts/install.sh", "packer/scripts/db_setup.sh", "packer/scripts/user.sh", "packer/scripts/project.sh", "packer/scripts/systemd.sh"]
+    scripts          = ["packer/scripts/upgrade.sh","packer/scripts/install.sh", "packer/scripts/user.sh"]
   }
 
+  provisioner "shell" {
+    environment_vars = ["DB_NAME=${var.DB_NAME}", "DB_USER=${var.DB_USER}", "DB_PASSWORD=${var.DB_PASSWORD}"]
+    scripts          = ["packer/scripts/db_setup.sh", "packer/scripts/project.sh", "packer/scripts/systemd.sh"]
+  }
+
+  
 }
