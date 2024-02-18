@@ -2,7 +2,9 @@ import { Sequelize } from 'sequelize'
 import dotenv from 'dotenv'
 import logger from './logger'
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+// Load environment variables from .env file
+const envPath = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'
+dotenv.config({ path: envPath })
 const db_host = process.env.DB_HOST || 'localhost'
 const db_port = process.env.DB_PORT || '5432'
 const db_user = process.env.DB_USER || ''
