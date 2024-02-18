@@ -6,6 +6,7 @@ on:
 
 jobs:
   test:
+    if: github.repository == 'CSYE-6225-Cloud-2024/webapp'
     uses: ./.github/workflows/webapp-CI-2.yml
 
   build:
