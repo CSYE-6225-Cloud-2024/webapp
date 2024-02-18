@@ -6,14 +6,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     if: github.repository == 'CSYE-6225-Cloud-2024/webapp'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run tests
-        uses: ./.github/workflows/webapp-CI-2.yml
+    uses: ./.github/workflows/webapp-CI-2.yml
 
   build:
     needs: test
