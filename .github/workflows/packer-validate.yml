@@ -16,7 +16,7 @@ jobs:
         uses: hashicorp/setup-packer@main
 
       - name: zip files
-        run: zip -r webapp.zip webapp
+        run: zip -r webapp.zip ../webapp
 
       - name: Packer init
         run: packer init packer/main.pkr.hcl
