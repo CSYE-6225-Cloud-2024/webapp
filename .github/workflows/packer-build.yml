@@ -42,5 +42,8 @@ jobs:
       - name: Packer build
         env:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: |
-          packer build packer/main.pkr.hcl
+          DB_USER: ${{ vars.DB_USER }}
+          DB_NAME: ${{ vars.DB_NAME }}
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_ZONE: ${{ vars.GCP_ZONE }}
+        run: packer build packer/main.pkr.hcl
