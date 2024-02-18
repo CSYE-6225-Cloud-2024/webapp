@@ -57,7 +57,7 @@ build {
   }
 
   provisioner "shell" {
-    scripts          = ["packer/scripts/upgrade.sh","packer/scripts/install.sh", "packer/scripts/user.sh"]
+    scripts = ["packer/scripts/upgrade.sh", "packer/scripts/install.sh", "packer/scripts/user.sh"]
   }
 
   provisioner "shell" {
@@ -65,5 +65,5 @@ build {
     scripts          = ["packer/scripts/db_setup.sh", "packer/scripts/project.sh", "packer/scripts/systemd.sh"]
   }
 
-  
+
 }
