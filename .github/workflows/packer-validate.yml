@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Packer Build
+    name: Packer validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
