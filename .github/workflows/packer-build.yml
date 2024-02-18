@@ -1,12 +1,14 @@
 name: test and packer build
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   test:
-    if: github.repository == 'CSYE-6225-Cloud-2024/webapp'
+    if: github.event.pull_request.merged == true
     uses: ./.github/workflows/webapp-CI-2.yml
     secrets: inherit
 
@@ -14,13 +16,13 @@ jobs:
     needs: test
     name: Packer Build
     runs-on: ubuntu-latest
-    if: github.repository == 'CSYE-6225-Cloud-2024/webapp'
+    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: zip file
-        run: zip -r webapp.zip ../webapp
+        run: zip -r webapp.zip webapp
 
       - name: Setup packer
         uses: hashicorp/setup-packer@main
