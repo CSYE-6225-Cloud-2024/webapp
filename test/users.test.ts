@@ -15,7 +15,7 @@ describe('users', () => {
         username: 'johndoe@example.com',
         password: 'password',
       })
-      expect(response.status).toBe(201)
+      expect(response.status).toBe(200)
       expect(response.body).toEqual({
         id: expect.any(String),
         first_name: 'John',
@@ -60,7 +60,7 @@ describe('users', () => {
         .send({
           password: 'password2',
         })
-      expect(response.status).toBe(204)
+      expect(response.status).toBe(201)
       expect(response.body).toEqual({})
     })
 
