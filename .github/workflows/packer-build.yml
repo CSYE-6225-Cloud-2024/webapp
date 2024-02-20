@@ -32,12 +32,6 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      - name: gcloud setup
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Check gcloud installation
-        run: gcloud info
-
       - name: Packer init
         run: packer init packer/main.pkr.hcl
 
