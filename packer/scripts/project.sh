@@ -14,7 +14,7 @@ sudo yarn
 
 # setup the env
 sudo tee .env > /dev/null << EOF 
-PORT=3000
+PORT=${PORT}
 DB_NAME=${DB_NAME}
 DB_USER=${DB_USER}
 DB_PASSWORD=${DB_PASSWORD}
