@@ -17,6 +17,17 @@ jobs:
     name: Packer Build
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
+    env:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_USER: ${{ vars.DB_USER }}
+      DB_NAME: ${{ vars.DB_NAME }}
+      PORT: ${{ vars.PORT }}
+      GCP_ZONE: ${{ vars.GCP_ZONE }}
+      SOURCE_IMAGE_FAMILY: ${{ vars.SOURCE_IMAGE_FAMILY }}
+      SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+      IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+      DISK_SIZE: ${{ vars.DISK_SIZE }}
+      DISK_TYPE: ${{ vars.DISK_TYPE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,15 +47,4 @@ jobs:
         run: packer init packer/main.pkr.hcl
 
       - name: Packer build
-        env:
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          PORT: ${{ vars.PORT }}
-          GCP_ZONE: ${{ vars.GCP_ZONE }}
-          SOURCE_IMAGE_FAMILY: ${{ vars.SOURCE_IMAGE_FAMILY }}
-          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          IMAGE_NAME: ${{ vars.IMAGE_NAME }}
-          DISK_SIZE: ${{ vars.DISK_SIZE }}
-          DISK_TYPE: ${{ vars.DISK_TYPE }}
         run: packer build packer/main.pkr.hcl
