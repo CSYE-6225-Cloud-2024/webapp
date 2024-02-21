@@ -28,4 +28,10 @@ jobs:
         env:
           project_id: 'test-project-id'
           zone: 'test-zone'
+          PORT: 3000
+          SOURCE_IMAGE_FAMILY: 'test-source-image'
+          SSH_USERNAME: 'test-ssh-username'
+          IMAGE_NAME: 'test-image-name'
+          DISK_SIZE: 20
+          DISK_TYPE: 'pd-standard'
         run: packer validate --var "project_id=${project_id}" --var "zone=${zone}" packer/main.pkr.hcl

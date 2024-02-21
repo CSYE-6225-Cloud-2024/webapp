@@ -40,6 +40,11 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_USER: ${{ vars.DB_USER }}
           DB_NAME: ${{ vars.DB_NAME }}
-          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          PORT: ${{ vars.PORT }}
           GCP_ZONE: ${{ vars.GCP_ZONE }}
+          SOURCE_IMAGE_FAMILY: ${{ vars.SOURCE_IMAGE_FAMILY }}
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+          DISK_SIZE: ${{ vars.DISK_SIZE }}
+          DISK_TYPE: ${{ vars.DISK_TYPE }}
         run: packer build packer/main.pkr.hcl
