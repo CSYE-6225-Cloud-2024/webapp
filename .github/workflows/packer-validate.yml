@@ -9,8 +9,8 @@ jobs:
     name: Packer validation
     runs-on: ubuntu-latest
     env:
-      project_id: 'test-project-id'
-      zone: 'test-zone'
+      GCP_PROJECT: 'test-project-id'
+      GCP_ZONE: 'test-zone'
       PORT: 3000
       SOURCE_IMAGE_FAMILY: 'test-source-image'
       SSH_USERNAME: 'test-ssh-username'
@@ -34,4 +34,4 @@ jobs:
         run: packer fmt -check packer/main.pkr.hcl
 
       - name: Packer validate
-        run: packer validate --var "project_id=${project_id}" --var "zone=${zone}" packer/main.pkr.hcl
+        run: packer validate --var packer/main.pkr.hcl
