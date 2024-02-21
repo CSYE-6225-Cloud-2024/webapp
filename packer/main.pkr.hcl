@@ -28,61 +28,47 @@ variable "PORT" {
   default = env("PORT")
 }
 
-variable "project_id" {
-  type    = string
-  default = env("GCP_PROJECT")
-}
-
-variable "zone" {
-  type    = string
-  default = env("GCP_ZONE")
-}
-
-variable "source_image_family" {
-  type    = string
-  default = env("SOURCE_IMAGE_FAMILY")
-}
-
-variable "image_storage_locations" {
-  type    = list(string)
-  default = ["us-east1"]
-}
-
-variable "ssh_username" {
-  type    = string
-  default = env("SSH_USERNAME")
-}
-
-variable "image_name" {
-  type    = string
-  default = env("IMAGE_NAME")
-}
-
-variable "image_family" {
-  type    = string
-  default = "centos-8-custom"
-}
-
-variable "disk_size" {
-  type    = number
-  default = env("DISK_SIZE")
-}
-
 variable "disk_type" {
   type    = string
   default = env("DISK_TYPE")
 }
 
+variable "builder" {
+  type = object({
+    project_id              = string
+    zone                    = string
+    source_image_family     = string
+    image_storage_locations = list(string)
+    ssh_username            = string
+    image_name              = string
+    image_family            = string
+    disk_size               = number
+    disk_type               = string
+  })
+
+  default = {
+    project_id              = env("GCP_PROJECT")
+    zone                    = env("GCP_ZONE")
+    source_image_family     = env("SOURCE_IMAGE_FAMILY")
+    image_storage_locations = ["us-east1"]
+    ssh_username            = env("SSH_USERNAME")
+    image_name              = env("IMAGE_NAME")
+    image_family            = "centos-8-custom"
+    disk_size               = env("DISK_SIZE")
+    disk_type               = env("DISK_TYPE")
+  }
+}
+
 source "googlecompute" "centos" {
-  project_id              = var.project_id
-  zone                    = var.zone
-  source_image_family     = var.source_image_family
-  image_storage_locations = var.image_storage_locations
-  ssh_username            = var.ssh_username
-  image_name              = "${var.image_name}-{{timestamp}}"
-  image_family            = var.image_family
-  disk_size               = var.disk_size
-  disk_type               = var.disk_type
+  project_id              = var.builder.project_id
+  zone                    = var.builder.zone
+  source_image_family     = var.builder.source_image_family
+  image_storage_locations = var.builder.image_storage_locations
+  ssh_username            = var.builder.ssh_username
+  image_name              = "${var.builder.image_name}-{{timestamp}}"
+  image_family            = var.builder.image_family
+  disk_size               = var.builder.disk_size
+  disk_type               = var.builder.disk_type
 }
 
 build {
