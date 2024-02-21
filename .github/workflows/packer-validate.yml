@@ -34,4 +34,4 @@ jobs:
         run: packer fmt -check packer/main.pkr.hcl
 
       - name: Packer validate
-        run: packer validate --var packer/main.pkr.hcl
+        run: packer validate packer/main.pkr.hcl
