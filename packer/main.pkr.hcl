@@ -69,7 +69,7 @@ source "googlecompute" "centos" {
   image_family            = var.builder.image_family
   disk_size               = var.builder.disk_size
   disk_type               = var.builder.disk_type
-
+}
 
 build {
   sources = ["source.googlecompute.centos"]
