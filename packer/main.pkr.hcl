@@ -7,32 +7,6 @@ packer {
   }
 }
 
-variable "DB_NAME" {
-  type    = string
-  default = env("DB_NAME")
-}
-
-variable "DB_USER" {
-  type    = string
-  default = env("DB_USER")
-}
-
-variable "DB_PASSWORD" {
-  type      = string
-  default   = env("DB_PASSWORD")
-  sensitive = true
-}
-
-variable "PORT" {
-  type    = number
-  default = env("PORT")
-}
-
-variable "disk_type" {
-  type    = string
-  default = env("DISK_TYPE")
-}
-
 variable "builder" {
   type = object({
     project_id              = string
@@ -80,12 +54,18 @@ build {
   }
 
   provisioner "shell" {
-    scripts = ["packer/scripts/upgrade.sh", "packer/scripts/install.sh", "packer/scripts/user.sh"]
+    scripts = [
+      "packer/scripts/upgrade.sh",
+      "packer/scripts/install.sh",
+      "packer/scripts/user.sh"
+    ]
   }
 
   provisioner "shell" {
-    environment_vars = ["DB_NAME=${var.DB_NAME}", "DB_USER=${var.DB_USER}", "DB_PASSWORD=${var.DB_PASSWORD}", "PORT=${var.PORT}"]
-    scripts          = ["packer/scripts/db_setup.sh", "packer/scripts/project.sh", "packer/scripts/systemd.sh"]
+    scripts = [
+      "packer/scripts/project.sh",
+      "packer/scripts/systemd.sh"
+    ]
   }
 
 

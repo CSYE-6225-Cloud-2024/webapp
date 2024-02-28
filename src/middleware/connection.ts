@@ -7,14 +7,13 @@ export const checkDBConection = async (
   res: Response,
   next: NextFunction
 ) => {
-  db.authenticate()
-    .then(async () => {
-      logger.info('Connection has been established successfully.')
-      next()
-    })
-    .catch(() => {
-      logger.error(`database connection failed`)
-      res.status(503).send()
-      return
-    })
+  try {
+    await db.authenticate()
+    logger.info('Connection has been established successfully')
+    next()
+  } catch (err) {
+    logger.error(`Unable to connect to the database: ${err}`)
+    res.status(500).send()
+    return
+  }
 }

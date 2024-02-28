@@ -12,13 +12,5 @@ sudo rm -f webapp.zip
 cd webapp
 sudo yarn
 
-# setup the env
-sudo tee .env > /dev/null << EOF 
-PORT=${PORT}
-DB_NAME=${DB_NAME}
-DB_USER=${DB_USER}
-DB_PASSWORD=${DB_PASSWORD}
-EOF
-
 # change user
 sudo chown -R csye6225:csye6225 /opt/webapp
