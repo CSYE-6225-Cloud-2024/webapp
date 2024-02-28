@@ -67,8 +67,7 @@ export const users = db.define<userModel>(
 export const usersInit = async () => {
   try {
     await users.sync()
-  } catch (e) {
-    logger.error('Error syncing user model')
-    logger.error(e)
+  } catch (err) {
+    logger.error(`Error syncing user model to database: ${err}`)
   }
 }

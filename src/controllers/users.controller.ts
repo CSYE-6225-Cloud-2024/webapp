@@ -12,11 +12,11 @@ import logger from '../util/logger'
 
 const createUserController = async (req: Request, res: Response) => {
   try {
+    const data: userPostRequest = await userPostReqValidator.parseAsync(
+      req.body
+    )
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    const data: userPostRequest = await userPostReqValidator.parseAsync({
-      ...req.body,
-      password: hashedPassword,
-    })
+    data.password = hashedPassword
     userService
       .createUser(data)
       .then((response: userResponse) => {
@@ -53,10 +53,8 @@ const updateUserController = async (req: Request, res: Response) => {
       return
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    const data: userPutRequest = await userPutReqValidator.parseAsync({
-      ...req.body,
-      password: hashedPassword,
-    })
+    const data: userPutRequest = await userPutReqValidator.parseAsync(req.body)
+    data.password = hashedPassword
     userService
       .updateUser(data, res.locals.username)
       .then(() => {

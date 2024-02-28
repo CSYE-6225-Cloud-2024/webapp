@@ -2,10 +2,10 @@ import { z } from 'zod'
 
 export const userPostReqValidator = z
   .object({
-    first_name: z.string(),
-    last_name: z.string(),
+    first_name: z.string().min(1),
+    last_name: z.string().min(1),
     username: z.string().email(),
-    password: z.string(),
+    password: z.string().min(1),
   })
   .strict()
 
@@ -13,9 +13,9 @@ export type userPostRequest = z.infer<typeof userPostReqValidator>
 
 export const userPutReqValidator = z
   .object({
-    first_name: z.string().optional(),
-    last_name: z.string().optional(),
-    password: z.string().optional(),
+    first_name: z.string().min(1).optional(),
+    last_name: z.string().min(1).optional(),
+    password: z.string().min(1).optional(),
   })
   .strict()
 
