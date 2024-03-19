@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development nodemon",
-    "start": "ts-node src/server.ts",
+    "start": "NODE_ENV=production ts-node src/server.ts",
     "test": "NODE_ENV=test jest --silent --verbose"
   },
   "dependencies": {

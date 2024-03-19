@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { userService } from '../services/user.service'
+import logger from '../util/logger'
 
 const isAuth = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers['authorization']
@@ -16,6 +17,7 @@ const isAuth = async (req: Request, res: Response, next: NextFunction) => {
     res.locals.username = username
     next()
   } else {
+    logger.warn(`Auth: invalid credentials for ${username}`)
     res.status(401).send()
   }
 }

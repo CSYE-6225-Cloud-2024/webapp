@@ -1,9 +1,11 @@
 import { Sequelize } from 'sequelize'
 import dotenv from 'dotenv'
-import logger from './logger'
 
 // Load environment variables from .env file
-const envPath = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'
+const envPath =
+  process.env.NODE_ENV !== 'production'
+    ? `.env.${process.env.NODE_ENV}`
+    : '.env'
 dotenv.config({ path: envPath })
 const db_host = process.env.DB_HOST || 'localhost'
 const db_port = process.env.DB_PORT || '5432'
@@ -14,5 +16,5 @@ const db_url = `postgres://${db_user}:${db_password}@${db_host}:${db_port}/${db_
 
 export const db: Sequelize = new Sequelize(db_url, {
   dialect: 'postgres',
-  logging: (msg) => logger.info(msg),
+  logging: false,
 })
