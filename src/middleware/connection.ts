@@ -9,7 +9,6 @@ export const checkDBConection = async (
 ) => {
   try {
     await db.authenticate()
-    logger.info('Connection has been established successfully')
     next()
   } catch (err) {
     logger.error(`Unable to connect to the database: ${err}`)

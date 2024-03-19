@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import logger from '../util/logger'
 import { request } from '../middleware/request'
 import { checkDBConection } from '../middleware/connection'
 
@@ -21,11 +20,9 @@ healthzRouter
     }
   )
   .head((req, res) => {
-    logger.warn(`/healthz: invalid request method ${req.method}`)
     res.status(405).send()
   })
   .all((req, res) => {
-    logger.warn(`/healthz: invalid request method ${req.method}`)
     res.status(405).send()
   })
 

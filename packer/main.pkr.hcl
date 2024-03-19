@@ -53,6 +53,16 @@ build {
     destination = "/tmp/"
   }
 
+  provisioner "file" {
+    source      = "packer/files/config.yaml"
+    destination = "/tmp/"
+  }
+
+  provisioner "file" {
+    source      = "packer/files/webapp.service"
+    destination = "/tmp/"
+  }
+
   provisioner "shell" {
     scripts = [
       "packer/scripts/upgrade.sh",
@@ -64,7 +74,8 @@ build {
   provisioner "shell" {
     scripts = [
       "packer/scripts/project.sh",
-      "packer/scripts/systemd.sh"
+      "packer/scripts/systemd.sh",
+      "packer/scripts/configOpsAgent.sh"
     ]
   }
 

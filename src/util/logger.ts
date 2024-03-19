@@ -1,22 +1,23 @@
 import winston from 'winston'
-const { combine, timestamp, colorize, align } = winston.format
-
-const logFormat = winston.format.printf(({ level, message, timestamp }) => {
-  return `${timestamp} [${level}]: ${message}`
-})
+const { combine, timestamp, json } = winston.format
 
 const logger = winston.createLogger({
-  level: 'info',
-  format: combine(
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss A' }),
-    colorize({
-      level: true,
-      message: true,
-    }),
-    align(),
-    logFormat
-  ),
-  transports: [new winston.transports.Console()],
+  format: combine(timestamp(), json()),
 })
+
+if (process.env.NODE_ENV === 'production') {
+  logger.add(
+    new winston.transports.File({
+      filename: '/var/log/webapp/webapp.log',
+      level: 'info',
+    })
+  )
+} else {
+  logger.add(
+    new winston.transports.Console({
+      level: 'debug',
+    })
+  )
+}
 
 export default logger

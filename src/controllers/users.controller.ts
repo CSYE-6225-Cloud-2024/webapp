@@ -32,17 +32,16 @@ const createUserController = async (req: Request, res: Response) => {
   }
 }
 
-const getUserController = (req: Request, res: Response) => {
-  userService
-    .getUser(res.locals.username)
-    .then((response: userResponse) => {
-      logger.info(`getUserController: ${response.username}`)
-      res.status(200).send(response)
-    })
-    .catch((error: Error) => {
-      logger.error(`getUserController: ${error}`)
-      res.status(404).send()
-    })
+const getUserController = async (req: Request, res: Response) => {
+  try {
+    const response: userResponse = await userService.getUser(
+      res.locals.username
+    )
+    res.status(200).send(response)
+  } catch (err) {
+    logger.error(`getUserController: ${err}`)
+    res.status(404).send()
+  }
 }
 
 const updateUserController = async (req: Request, res: Response) => {
@@ -58,7 +57,9 @@ const updateUserController = async (req: Request, res: Response) => {
     userService
       .updateUser(data, res.locals.username)
       .then(() => {
-        logger.info('user updated successfully')
+        logger.info(
+          `user updated successfully with username: ${res.locals.username}`
+        )
         res.status(204).send()
       })
       .catch((error: Error) => {
