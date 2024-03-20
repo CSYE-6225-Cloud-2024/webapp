@@ -27,7 +27,7 @@ variable "builder" {
     image_storage_locations = ["us-east1"]
     ssh_username            = env("SSH_USERNAME")
     image_name              = env("IMAGE_NAME")
-    image_family            = "webapp-centos-8"
+    image_family            = "webapp-csye6225"
     disk_size               = env("DISK_SIZE")
     disk_type               = env("DISK_TYPE")
   }
