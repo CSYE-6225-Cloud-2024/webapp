@@ -2,7 +2,7 @@ import { Router } from 'express'
 import healthzRouter from './healthz.route'
 import notfoundRouter from './notfound.route'
 import { userRouter } from './user.route'
-import isAuth from '../middleware/auth'
+import { isAuth, isVerified } from '../middleware/auth'
 
 const api = Router()
 const authRoute = Router()
@@ -12,6 +12,7 @@ publicRoute.use(healthzRouter)
 publicRoute.use('/v1', userRouter.publicRoutes)
 
 authRoute.use(isAuth)
+if (process.env.NODE_ENV !== 'test') authRoute.use(isVerified)
 authRoute.use('/v1', userRouter.authenticatedRoutes)
 
 api.use(publicRoute)

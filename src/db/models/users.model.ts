@@ -20,6 +20,7 @@ export interface userModel
   username: string
   account_created: CreationOptional<Date>
   account_updated: CreationOptional<Date>
+  verified: CreationOptional<boolean>
 }
 
 export const users = db.define<userModel>(
@@ -57,6 +58,10 @@ export const users = db.define<userModel>(
     account_updated: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+    },
+    verified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {

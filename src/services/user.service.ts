@@ -29,6 +29,21 @@ const getAuth = async (username: string, password: string) => {
   return null
 }
 
+const getVerification = async (username: string) => {
+  const user = await users.findOne({
+    where: {
+      username,
+    },
+    attributes: ['verified'],
+  })
+
+  if (user === null) {
+    return null
+  }
+
+  return user.verified
+}
+
 const createUser = async (data: userPostRequest): Promise<userResponse> => {
   try {
     const newUser = await users.create(data)
@@ -57,7 +72,6 @@ const getUser = async (username: string): Promise<userResponse> => {
     })
 
     if (!user) {
-      logger.error('User not found')
       throw new Error('User not found')
     }
 
@@ -80,7 +94,6 @@ const updateUser = async (
     })
 
     if (!user) {
-      logger.error('User not found')
       throw new Error('User not found')
     }
 
@@ -96,9 +109,36 @@ const updateUser = async (
   }
 }
 
+const verifyUser = async (username: string): Promise<void> => {
+  try {
+    const user = await users.findOne({
+      where: {
+        username,
+      },
+    })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    if (user.verified) {
+      throw new Error('User already verified')
+    }
+
+    await user.update({
+      verified: true,
+    })
+  } catch (error) {
+    logger.error(`verifyUser: ${error}`)
+    throw new Error('Error verifying user')
+  }
+}
+
 export const userService = {
   getAuth,
+  getVerification,
   createUser,
   getUser,
   updateUser,
+  verifyUser,
 }
