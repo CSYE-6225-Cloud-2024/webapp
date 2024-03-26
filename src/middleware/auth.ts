@@ -2,7 +2,11 @@ import { Request, Response, NextFunction } from 'express'
 import { userService } from '../services/user.service'
 import logger from '../util/logger'
 
-const isAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const isAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const token = req.headers['authorization']
   if (!token) {
     return res.status(401).send()
@@ -22,4 +26,16 @@ const isAuth = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-export default isAuth
+export const isVerified = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const verified = await userService.getVerification(res.locals.username)
+  if (verified) {
+    next()
+  } else {
+    logger.warn(`isVerified: user ${res.locals.username} not verified`)
+    res.status(401).send()
+  }
+}

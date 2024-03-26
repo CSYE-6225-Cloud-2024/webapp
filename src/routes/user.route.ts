@@ -8,14 +8,21 @@ const publicRoutes = Router()
 const authenticatedRoutes = Router()
 
 publicRoutes
-  .route('/user')
   .post(
+    '/user',
     request.isValidContentType,
     request.noQueryAllowed,
     checkDBConection,
     userController.createUserController
   )
-  .all((req, res) => {
+  .get(
+    '/user/verify/:token',
+    request.noQueryAllowed,
+    request.noBodyAllowed,
+    checkDBConection,
+    userController.verifyUserController
+  )
+  .all('/user', (req, res) => {
     logger.warn(`user: invalid request method ${req.method}`)
     res.status(405).send()
   })

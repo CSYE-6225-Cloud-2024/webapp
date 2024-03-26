@@ -9,6 +9,9 @@ import {
 } from '../validators/users'
 import bcrypt from 'bcrypt'
 import logger from '../util/logger'
+import { publishMessage } from '../util/pub'
+import { tokenDataType } from '../validators/token'
+import { tokenService } from '../services/token.service'
 
 const createUserController = async (req: Request, res: Response) => {
   try {
@@ -21,6 +24,7 @@ const createUserController = async (req: Request, res: Response) => {
       .createUser(data)
       .then((response: userResponse) => {
         logger.info(`created user with username: ${response.username}`)
+        if (process.env.NODE_ENV !== 'test') publishMessage(response.username)
         res.status(201).send(response)
       })
       .catch((error: Error) => {
@@ -71,8 +75,43 @@ const updateUserController = async (req: Request, res: Response) => {
   }
 }
 
+const verifyUserController = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params
+    const tokenData: tokenDataType = await tokenService.getToken(token)
+    if (tokenData.expires_at < new Date()) {
+      logger.info('Token expired')
+      res.status(410).send({ message: 'Verification Link Expired' })
+      return
+    }
+    userService
+      .verifyUser(tokenData.username)
+      .then(() => {
+        logger.info(
+          `user verified successfully with username: ${tokenData.username}`
+        )
+        res.status(200).send({ meessage: 'User verified successfully' })
+      })
+      .catch((error: Error) => {
+        if (error.message === 'User already verified') {
+          logger.info(
+            `user already verified with username: ${tokenData.username}`
+          )
+          res.status(200).send({ message: 'User already verified' })
+          return
+        }
+        logger.error(`userVerifyController: ${error}`)
+        res.status(400).send()
+      })
+  } catch (err) {
+    logger.error(`userVerifyController: ${err}`)
+    res.status(400).send()
+  }
+}
+
 export const userController = {
   createUserController,
   getUserController,
   updateUserController,
+  verifyUserController,
 }
