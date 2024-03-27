@@ -130,7 +130,7 @@ const verifyUser = async (username: string): Promise<void> => {
     })
   } catch (error) {
     logger.error(`verifyUser: ${error}`)
-    throw new Error('Error verifying user')
+    throw new Error((error as Error).message)
   }
 }
 

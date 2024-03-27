@@ -36,6 +36,6 @@ export const isVerified = async (
     next()
   } else {
     logger.warn(`isVerified: user ${res.locals.username} not verified`)
-    res.status(401).send()
+    res.status(403).send()
   }
 }
