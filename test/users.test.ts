@@ -1,6 +1,7 @@
 import app from '../src'
 import request from 'supertest'
 import { users } from '../src/db/models/users.model'
+import { db } from '../src/util/db'
 
 describe('users', () => {
   afterAll(async () => {
