@@ -25,14 +25,14 @@ const createUserController = async (req: Request, res: Response) => {
       .then((response: userResponse) => {
         logger.info(`created user with username: ${response.username}`)
         if (process.env.NODE_ENV !== 'test') publishMessage(response.username)
-        res.status(201).send(response)
+        res.status(201).json(response)
       })
       .catch((error: Error) => {
         logger.error(`createUserController: ${error}`)
-        res.status(400).send()
+        res.status(400).json()
       })
   } catch (_) {
-    res.status(400).send()
+    res.status(400).json()
   }
 }
 
@@ -41,10 +41,10 @@ const getUserController = async (req: Request, res: Response) => {
     const response: userResponse = await userService.getUser(
       res.locals.username
     )
-    res.status(200).send(response)
+    res.status(200).json(response)
   } catch (err) {
     logger.error(`getUserController: ${err}`)
-    res.status(404).send()
+    res.status(404).json()
   }
 }
 
@@ -52,7 +52,7 @@ const updateUserController = async (req: Request, res: Response) => {
   try {
     if (Object.keys(req.body).length === 0) {
       logger.error('updateUserController: no data provided')
-      res.status(400).send()
+      res.status(400).json()
       return
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
@@ -64,14 +64,14 @@ const updateUserController = async (req: Request, res: Response) => {
         logger.info(
           `user updated successfully with username: ${res.locals.username}`
         )
-        res.status(204).send()
+        res.status(204).json()
       })
       .catch((error: Error) => {
         logger.error(`updateUserController: ${error}`)
-        res.status(400).send()
+        res.status(400).json()
       })
   } catch (_) {
-    res.status(400).send()
+    res.status(400).json()
   }
 }
 
@@ -81,7 +81,7 @@ const verifyUserController = async (req: Request, res: Response) => {
     const tokenData: tokenDataType = await tokenService.getToken(token)
     if (tokenData.expires_at < new Date()) {
       logger.info('Token expired')
-      res.status(410).send({ message: 'Verification Link Expired' })
+      res.status(410).json({ message: 'Verification Link Expired' })
       return
     }
     userService
@@ -90,22 +90,22 @@ const verifyUserController = async (req: Request, res: Response) => {
         logger.info(
           `user verified successfully with username: ${tokenData.username}`
         )
-        res.status(200).send({ meessage: 'User verified successfully' })
+        res.status(200).json({ meessage: 'User verified successfully' })
       })
       .catch((error: Error) => {
         if (error.message === 'User already verified') {
           logger.info(
             `user already verified with username: ${tokenData.username}`
           )
-          res.status(200).send({ message: 'User already verified' })
+          res.status(200).json({ message: 'User already verified' })
           return
         }
         logger.error(`userVerifyController: ${error}`)
-        res.status(400).send()
+        res.status(400).json()
       })
   } catch (err) {
     logger.error(`userVerifyController: ${err}`)
-    res.status(400).send()
+    res.status(400).json()
   }
 }
 
