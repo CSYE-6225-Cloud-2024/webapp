@@ -9,7 +9,7 @@ export const isAuth = async (
 ) => {
   const token = req.headers['authorization']
   if (!token) {
-    return res.status(401).send()
+    return res.status(401).json()
   }
   const [username, password] = Buffer.from(token.split(' ')[1], 'base64')
     .toString('utf-8')
@@ -22,7 +22,7 @@ export const isAuth = async (
     next()
   } else {
     logger.warn(`Auth: invalid credentials for ${username}`)
-    res.status(401).send()
+    res.status(401).json()
   }
 }
 
@@ -36,6 +36,6 @@ export const isVerified = async (
     next()
   } else {
     logger.warn(`isVerified: user ${res.locals.username} not verified`)
-    res.status(403).send()
+    res.status(403).json()
   }
 }

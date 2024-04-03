@@ -16,14 +16,14 @@ healthzRouter
     request.noQueryAllowed,
     checkDBConection,
     async (req, res) => {
-      res.send()
+      res.json()
     }
   )
   .head((req, res) => {
-    res.status(405).send()
+    res.status(405).json()
   })
   .all((req, res) => {
-    res.status(405).send()
+    res.status(405).json()
   })
 
 export default healthzRouter

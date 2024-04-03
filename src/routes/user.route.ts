@@ -24,7 +24,7 @@ publicRoutes
   )
   .all('/user', (req, res) => {
     logger.warn(`user: invalid request method ${req.method}`)
-    res.status(405).send()
+    res.status(405).json()
   })
 
 authenticatedRoutes
@@ -43,11 +43,11 @@ authenticatedRoutes
   )
   .head((req, res) => {
     logger.warn(`user/self: invalid request method ${req.method}`)
-    res.status(405).send()
+    res.status(405).json()
   })
   .all((req, res) => {
     logger.warn(`user/self: invalid request method ${req.method}`)
-    res.status(405).send()
+    res.status(405).json()
   })
 
 export const userRouter = {

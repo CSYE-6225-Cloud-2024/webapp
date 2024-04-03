@@ -12,7 +12,7 @@ export const checkDBConection = async (
     next()
   } catch (err) {
     logger.error(`Unable to connect to the database: ${err}`)
-    res.status(500).send()
+    res.status(500).json()
     return
   }
 }
