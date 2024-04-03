@@ -9,11 +9,11 @@ const isValidContentType = (
   const contentType =
     req.headers['content-type']?.toLowerCase() || 'application/json'
   if (contentType !== 'application/json') {
-    res.status(400).send()
     logger.warn({
       message: 'invalid content',
       contentType: contentType,
     })
+    res.status(400).json()
     return
   }
 
@@ -22,10 +22,10 @@ const isValidContentType = (
 
 const noQueryAllowed = (req: Request, res: Response, next: NextFunction) => {
   if (Object.keys(req.query).length > 0) {
-    res.status(400).send()
     logger.warn({
       message: 'no query parameters are allowed for this endpoint',
     })
+    res.status(400).json()
     return
   }
 
@@ -34,10 +34,10 @@ const noQueryAllowed = (req: Request, res: Response, next: NextFunction) => {
 
 const noBodyAllowed = (req: Request, res: Response, next: NextFunction) => {
   if ('content-length' in req.headers) {
-    res.status(400).send()
     logger.warn({
       message: 'no body is allowed for this endpoint',
     })
+    res.status(400).json()
     return
   }
 
