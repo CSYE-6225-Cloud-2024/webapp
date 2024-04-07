@@ -59,9 +59,9 @@ jobs:
           DB_PASSWORD: ${{ vars.TF_DB_PASSWORD }}
           DB_NAME: ${{ vars.TF_DB_NAME }}
         run: |
-          gcloud beta compute instance-templates create webapp-instance-template- --project=csye6225-cloudapp-dev \
+          gcloud beta compute instance-templates create webapp-instance-template-123456 --project=csye6225-cloudapp-dev \
           --machine-type=n2-standard-2 --network-interface=network-tier=STANDARD,subnet=webapp \
-          --instance-template-region=projects/csye6225-cloudapp-dev/regions/us-east1 \
+          --instance-template-region=projects/csye6225-cloudapp-dev/regions/us-east1 --region=projects/csye6225-cloudapp-dev/regions/us-east1 \
           --metadata=startup-script=\#\!/bin/bash$'\n'$'\n'if\ \[\ -f\ /opt/webapp/.env\ \]\;\ then$'\n'\ \ echo\ \"File\ .env\ already\ exists.\"$'\n'\ \ exit\ 0$'\n'fi$'\n'echo\ \"Creating\ .env\ file...\"$'\n'sudo\ tee\ -a\ /opt/webapp/.env\ \>\ /dev/null\ \<\<\ EOF$'\n'PORT=\$PORT$'\n'DB_HOST=\$DB_HOST$'\n'DB_USER=\$DB_USER$'\n'DB_PASSWORD=\$DB_PASSWORD$'\n'DB_NAME=\$DB_NAME$'\n'EOF$'\n'chown\ csye6225:csye6225\ /opt/webapp/.env$'\n' \
           --maintenance-policy=MIGRATE --provisioning-model=STANDARD \
           --service-account=webapp-service-account@csye6225-cloudapp-dev.iam.gserviceaccount.com --scopes=https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write \
