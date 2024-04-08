@@ -62,6 +62,7 @@ jobs:
           DB_NAME: ${{ vars.TF_DB_NAME }}
           PORT: ${{ vars.PORT }}
           TIMESTAMP: ${{ env.TIME }}
+          WAIT_TYPE: ${{ vars.WAIT_TYPE }}
         run: |
           gcloud beta compute instance-templates create webapp-instance-template-${{env.TIMESTAMP}} --project=${{env.GCP_PROJECT}} \
           --machine-type=n2-standard-2 --network-interface=network-tier=STANDARD,subnet=webapp \
@@ -81,5 +82,4 @@ jobs:
 
       - name: Check instance group status
         run: |
-          gcloud compute instance-groups managed wait-until --stable webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --region=${{env.REGION}}
-
+          gcloud compute instance-groups managed wait-until --${{env.WAIT_TYPE}} webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --region=${{env.REGION}}
