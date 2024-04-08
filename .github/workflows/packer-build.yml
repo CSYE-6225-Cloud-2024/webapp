@@ -1,20 +1,21 @@
 name: test and packer build
 on:
   pull_request:
+    types: [closed]
     branches:
       - main
 
 jobs:
-  # test:
-  #  if: github.event.pull_request.merged == true
-  #   uses: ./.github/workflows/webapp-CI-2.yml
-  #   secrets: inherit
+  test:
+    if: github.event.pull_request.merged == true
+    uses: ./.github/workflows/webapp-CI-2.yml
+    secrets: inherit
 
   build:
-    # needs: test
+    needs: test
     name: Packer Build
     runs-on: ubuntu-latest
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     env:
       GCP_ZONE: ${{ vars.GCP_ZONE }}
       SOURCE_IMAGE_FAMILY: ${{ vars.SOURCE_IMAGE_FAMILY }}
@@ -39,7 +40,7 @@ jobs:
       - name: gcloud auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.MIG_GCP_CREDENTIALS }}
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Packer init
         run: packer init packer/main.pkr.hcl
@@ -49,12 +50,12 @@ jobs:
 
       - name: Set image name
         id: get_image_name
-        # run: echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)" >> $GITHUB_ENV
-        run: echo "TIME=$(date +%s)" >> $GITHUB_ENV
+        run: |
+          echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)" >> $GITHUB_ENV
+          echo "TIME=$(date +%s)" >> $GITHUB_ENV
 
       - name: Make image template
         env:
-          AMI_ID: 'centos-8-1712514233'
           DB_HOST: ${{ vars.TF_DB_HOST }}
           DB_USER: ${{ vars.TF_DB_USER }}
           DB_PASSWORD: ${{ secrets.TF_DB_PASSWORD }}
@@ -81,3 +82,4 @@ jobs:
       - name: Check instance group status
         run: |
           gcloud compute instance-groups managed wait-until --stable webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --region=${{env.REGION}}
+
