@@ -1,8 +1,7 @@
 name: test and packer build
 on:
   pull_request:
-    types:
-      - closed
+    types: [closed]
     branches:
       - main
 
@@ -24,6 +23,7 @@ jobs:
       IMAGE_NAME: ${{ vars.IMAGE_NAME }}
       DISK_SIZE: ${{ vars.DISK_SIZE }}
       DISK_TYPE: ${{ vars.DISK_TYPE }}
+      REGION: 'us-east1'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,25 +48,38 @@ jobs:
       # - name: Packer build
       #   run: packer build packer/main.pkr.hcl
 
-      # - name: Set image name
-      #   id: get_image_name
-      #   run: echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)" >> $GITHUB_ENV
+      - name: Set image name
+        id: get_image_name
+        run: |
+          echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)" >> $GITHUB_ENV
+          echo "TIME=$(date +%s)" >> $GITHUB_ENV
 
       - name: Make image template
         env:
-          AMI_ID: "centos-8-1712514233"
           DB_HOST: ${{ vars.TF_DB_HOST }}
           DB_USER: ${{ vars.TF_DB_USER }}
-          DB_PASSWORD: ${{ vars.TF_DB_PASSWORD }}
+          DB_PASSWORD: ${{ secrets.TF_DB_PASSWORD }}
           DB_NAME: ${{ vars.TF_DB_NAME }}
+          PORT: ${{ vars.PORT }}
+          TIMESTAMP: ${{ env.TIME }}
+          WAIT_TYPE: ${{ vars.WAIT_TYPE }}
         run: |
-          gcloud beta compute instance-templates create webapp-instance-template-123456 --project=csye6225-cloudapp-dev \
+          gcloud beta compute instance-templates create webapp-instance-template-${{env.TIMESTAMP}} --project=${{env.GCP_PROJECT}} \
           --machine-type=n2-standard-2 --network-interface=network-tier=STANDARD,subnet=webapp \
-          --instance-template-region=us-east1 --region=us-east1 \
-          --metadata=startup-script=\#\!/bin/bash$'\n'$'\n'if\ \[\ -f\ /opt/webapp/.env\ \]\;\ then$'\n'\ \ echo\ \"File\ .env\ already\ exists.\"$'\n'\ \ exit\ 0$'\n'fi$'\n'echo\ \"Creating\ .env\ file...\"$'\n'sudo\ tee\ -a\ /opt/webapp/.env\ \>\ /dev/null\ \<\<\ EOF$'\n'PORT=\$PORT$'\n'DB_HOST=\$DB_HOST$'\n'DB_USER=\$DB_USER$'\n'DB_PASSWORD=\$DB_PASSWORD$'\n'DB_NAME=\$DB_NAME$'\n'EOF$'\n'chown\ csye6225:csye6225\ /opt/webapp/.env$'\n' \
+          --instance-template-region=${{env.REGION}} \
+          --metadata=startup-script=\#\!/bin/bash$'\n'$'\n'if\ \[\ -f\ /opt/webapp/.env\ \]\;\ then$'\n'\ \ echo\ \"File\ .env\ already\ exists.\"$'\n'\ \ exit\ 0$'\n'fi$'\n'echo\ \"Creating\ .env\ file...\"$'\n'sudo\ tee\ -a\ /opt/webapp/.env\ \>\ /dev/null\ \<\<\ EOF$'\n'PORT=\${{env.PORT}}$'\n'DB_HOST=\${{env.DB_HOST}}$'\n'DB_USER=\${{env.DB_USER}}$'\n'DB_PASSWORD=\${{env.DB_PASSWORD}}$'\n'DB_NAME=\${{env.DB_NAME}}$'\n'EOF$'\n'chown\ csye6225:csye6225\ /opt/webapp/.env$'\n' \
           --maintenance-policy=MIGRATE --provisioning-model=STANDARD \
           --service-account=webapp-service-account@csye6225-cloudapp-dev.iam.gserviceaccount.com --scopes=https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write \
-          --region=us-east1 --tags=webapp-http,db-allow \
-          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/csye6225-cloudapp-dev/global/images/$AMI_ID,kms-key=projects/csye6225-cloudapp-dev/locations/us/keyRings/Key-ring/cryptoKeys/vm-crypto-key,mode=rw,size=20,type=pd-standard \
+          --region=${{env.REGION}} --tags=webapp-http,db-allow \
+          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{env.GCP_PROJECT}}/global/images/$AMI_ID,kms-key=projects/${{env.GCP_PROJECT}}/locations/us/keyRings/Key-ring/cryptoKeys/vm-crypto-key,mode=rw,size=20,type=pd-standard \
           --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
-  
+
+      - name: Update instance group manager
+        env:
+          TIMESTAMP: ${{ env.TIME }}
+        run: |
+          gcloud beta compute instance-groups managed rolling-action start-update webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --version=template=projects/${{env.GCP_PROJECT}}/regions/${{env.REGION}}/instanceTemplates/webapp-instance-template-${{env.TIMESTAMP}} --region=${{env.REGION}}
+
+      - name: Check instance group status
+        run: |
+          gcloud compute instance-groups managed wait-until --${{env.WAIT_TYPE}} webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --region=${{env.REGION}}
