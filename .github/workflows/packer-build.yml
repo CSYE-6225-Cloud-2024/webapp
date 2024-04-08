@@ -6,7 +6,7 @@ on:
 
 jobs:
   # test:
-  #   if: github.event.pull_request.merged == true
+  #  if: github.event.pull_request.merged == true
   #   uses: ./.github/workflows/webapp-CI-2.yml
   #   secrets: inherit
 
@@ -14,7 +14,7 @@ jobs:
     # needs: test
     name: Packer Build
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     env:
       GCP_ZONE: ${{ vars.GCP_ZONE }}
       SOURCE_IMAGE_FAMILY: ${{ vars.SOURCE_IMAGE_FAMILY }}
