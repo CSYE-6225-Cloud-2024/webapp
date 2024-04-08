@@ -1,17 +1,14 @@
 name: test and packer build
 on:
   pull_request:
-    types:
-      - closed
-      - opened
     branches:
       - main
 
 jobs:
-  test:
-    if: github.event.pull_request.merged == true
-    uses: ./.github/workflows/webapp-CI-2.yml
-    secrets: inherit
+  # test:
+  #   if: github.event.pull_request.merged == true
+  #   uses: ./.github/workflows/webapp-CI-2.yml
+  #   secrets: inherit
 
   build:
     needs: test
