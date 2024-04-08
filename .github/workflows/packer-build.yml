@@ -39,7 +39,7 @@ jobs:
       - name: gcloud auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          credentials_json: ${{ secrets.MIG_GCP_CREDENTIALS }}
 
       - name: Packer init
         run: packer init packer/main.pkr.hcl
