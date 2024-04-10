@@ -63,7 +63,6 @@ jobs:
 
       - name: Make image template
         env:
-          AMI_ID: "centos-8-1712725275"
           PORT: ${{ vars.PORT }}
         run: |
           gcloud beta compute instance-templates create webapp-instance-template-${{env.TIMESTAMP}} --project=${{env.GCP_PROJECT}} \
