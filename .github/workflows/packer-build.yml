@@ -50,7 +50,7 @@ jobs:
       - name: Set image name
         id: get_image_name
         run: |
-          echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)" >> $GITHUB_ENV
+          # echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)" >> $GITHUB_ENV
           echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
           DB_PASSWORD=$(gcloud secrets versions access 1 --secret=github-secret)
           echo "::add-mask::$DB_PASSWORD"
@@ -77,7 +77,7 @@ jobs:
 
       - name: Update instance group manager
         run: |
-          gcloud beta compute instance-groups managed rolling-action start-update webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --type='proactive' --max-surge=3 --max-unavailable=3 --min-ready=300 --minimal-action='replace' --most-disruptive-allowed-action='replace' --replacement-method='substitute' --version=template=projects/${{env.GCP_PROJECT}}/regions/${{env.REGION}}/instanceTemplates/webapp-instance-template-${{env.TIMESTAMP}} --region=${{env.REGION}}
+          gcloud beta compute instance-groups managed rolling-action start-update webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --type='proactive' --max-surge=1 --max-unavailable=1 --min-ready=180 --minimal-action='replace' --most-disruptive-allowed-action='replace' --replacement-method='substitute' --version=template=projects/${{env.GCP_PROJECT}}/regions/${{env.REGION}}/instanceTemplates/webapp-instance-template-${{env.TIMESTAMP}} --region=${{env.REGION}}
 
       - name: Check instance group status
         env:
