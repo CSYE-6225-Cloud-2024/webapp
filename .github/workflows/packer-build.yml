@@ -77,7 +77,7 @@ jobs:
 
       - name: Update instance group manager
         run: |
-          gcloud beta compute instance-groups managed rolling-action start-update webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --version=template=projects/${{env.GCP_PROJECT}}/regions/${{env.REGION}}/instanceTemplates/webapp-instance-template-${{env.TIMESTAMP}} --region=${{env.REGION}}
+          gcloud beta compute instance-groups managed rolling-action start-update webapp-instance-group-manager --project=${{env.GCP_PROJECT}} type='proactive' --max-surge=3 --max-unavailable=3 --min-ready=300 --minimal-action='replace' --most-disruptive-allowed-action='replace' --replacement-method='substitute' --version=template=projects/${{env.GCP_PROJECT}}/regions/${{env.REGION}}/instanceTemplates/webapp-instance-template-${{env.TIMESTAMP}} --region=${{env.REGION}}
 
       - name: Check instance group status
         env:
