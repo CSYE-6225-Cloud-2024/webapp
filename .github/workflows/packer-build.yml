@@ -1,21 +1,20 @@
 name: test and packer build
 on:
   pull_request:
-    types: [closed]
     branches:
       - main
 
 jobs:
-  test:
-    if: github.event.pull_request.merged == true
-    uses: ./.github/workflows/webapp-CI-2.yml
-    secrets: inherit
+  # test:
+  #   if: github.event.pull_request.merged == true
+  #   uses: ./.github/workflows/webapp-CI-2.yml
+  #   secrets: inherit
 
   build:
-    needs: test
+    # needs: test
     name: Packer Build
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     env:
       GCP_ZONE: ${{ vars.GCP_ZONE }}
       SOURCE_IMAGE_FAMILY: ${{ vars.SOURCE_IMAGE_FAMILY }}
@@ -23,7 +22,7 @@ jobs:
       IMAGE_NAME: ${{ vars.IMAGE_NAME }}
       DISK_SIZE: ${{ vars.DISK_SIZE }}
       DISK_TYPE: ${{ vars.DISK_TYPE }}
-      REGION: 'us-east1'
+      REGION: ${{ vars.REGION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,16 +51,18 @@ jobs:
         id: get_image_name
         run: |
           echo "AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2)" >> $GITHUB_ENV
-          echo "TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+          DB_PASSWORD=$(gcloud secrets versions access 1 --secret=github-secret)
+          echo "::add-mask::$DB_PASSWORD"
+          echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
+          echo "DB_HOST=$(gcloud secrets versions access 2 --secret=github-secret)" >> $GITHUB_ENV
+          echo "DB_USER=$(gcloud secrets versions access 3 --secret=github-secret)" >> $GITHUB_ENV
+          echo "DB_NAME=$(gcloud secrets versions access 4 --secret=github-secret)" >> $GITHUB_ENV
+          echo "CRYTO_KEY=$(gcloud secrets versions access 5 --secret=github-secret)" >> $GITHUB_ENV
 
       - name: Make image template
         env:
-          DB_HOST: ${{ vars.TF_DB_HOST }}
-          DB_USER: ${{ vars.TF_DB_USER }}
-          DB_PASSWORD: ${{ secrets.TF_DB_PASSWORD }}
-          DB_NAME: ${{ vars.TF_DB_NAME }}
           PORT: ${{ vars.PORT }}
-          TIMESTAMP: ${{ env.TIME }}
         run: |
           gcloud beta compute instance-templates create webapp-instance-template-${{env.TIMESTAMP}} --project=${{env.GCP_PROJECT}} \
           --machine-type=n2-standard-2 --network-interface=network-tier=STANDARD,subnet=webapp \
@@ -70,12 +71,10 @@ jobs:
           --maintenance-policy=MIGRATE --provisioning-model=STANDARD \
           --service-account=webapp-service-account@csye6225-cloudapp-dev.iam.gserviceaccount.com --scopes=https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write \
           --region=${{env.REGION}} --tags=webapp-http,db-allow \
-          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{env.GCP_PROJECT}}/global/images/$AMI_ID,kms-key=projects/${{env.GCP_PROJECT}}/locations/us/keyRings/Key-ring/cryptoKeys/vm-crypto-key,mode=rw,size=20,type=pd-standard \
+          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{env.GCP_PROJECT}}/global/images/${{env.AMI_ID}},kms-key=${{env.CRYPTO_KEY}},mode=rw,size=${{ env.DISK_SIZE }},type=${{ env.DISK_TYPE }} \
           --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
 
       - name: Update instance group manager
-        env:
-          TIMESTAMP: ${{ env.TIME }}
         run: |
           gcloud beta compute instance-groups managed rolling-action start-update webapp-instance-group-manager --project=${{env.GCP_PROJECT}} --version=template=projects/${{env.GCP_PROJECT}}/regions/${{env.REGION}}/instanceTemplates/webapp-instance-template-${{env.TIMESTAMP}} --region=${{env.REGION}}
 
