@@ -10,7 +10,7 @@ describe('users', () => {
 
   describe('create user and get that user', () => {
     test('create user', async () => {
-      const response = await request(app).post('/v1/user').send({
+      const response = await request(app).post('/v5/user').send({
         first_name: 'John',
         last_name: 'Doe',
         username: 'johndoe@example.com',
@@ -29,7 +29,7 @@ describe('users', () => {
 
     test('get user', async () => {
       const response = await request(app)
-        .get('/v1/user/self')
+        .get('/v5/user/self')
         .set(
           'Authorization',
           `Basic ${Buffer.from('johndoe@example.com:password').toString(
@@ -51,7 +51,7 @@ describe('users', () => {
   describe('update user and get with new password', () => {
     test('update user', async () => {
       const response = await request(app)
-        .put('/v1/user/self')
+        .put('/v5/user/self')
         .set(
           'Authorization',
           `Basic ${Buffer.from('johndoe@example.com:password').toString(
@@ -67,7 +67,7 @@ describe('users', () => {
 
     test('get user with new password', async () => {
       const response = await request(app)
-        .get('/v1/user/self')
+        .get('/v5/user/self')
         .set(
           'Authorization',
           `Basic ${Buffer.from('johndoe@example.com:password2').toString(
