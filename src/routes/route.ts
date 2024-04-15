@@ -10,11 +10,11 @@ const authRoute = Router()
 const publicRoute = Router()
 
 publicRoute.use(healthzRouter)
-publicRoute.use('/v1', httpLogger, userRouter.publicRoutes)
+publicRoute.use('/v5', httpLogger, userRouter.publicRoutes)
 
 authRoute.use(isAuth)
 if (process.env.NODE_ENV !== 'test') authRoute.use(isVerified)
-authRoute.use('/v1', httpLogger, userRouter.authenticatedRoutes)
+authRoute.use('/v5', httpLogger, userRouter.authenticatedRoutes)
 
 api.use(publicRoute)
 api.use(authRoute)

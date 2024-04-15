@@ -24,7 +24,7 @@ const createUserController = async (req: Request, res: Response) => {
       .createUser(data)
       .then((response: userResponse) => {
         logger.info(`created user with username: ${response.username}`)
-        if (process.env.NODE_ENV !== 'test') publishMessage(JSON.stringify({ username: response.username, url: "https://api.jayv.tech/v1/user/verify"}))
+        if (process.env.NODE_ENV !== 'test') publishMessage(JSON.stringify({ username: response.username, url: "https://api.jayv.tech/v5/user/verify"}))
         res.status(201).json(response)
       })
       .catch((error: Error) => {
